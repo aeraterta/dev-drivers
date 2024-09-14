@@ -20,11 +20,11 @@
 
 :paths:
   :test:
-    - lsm303/test/**
+    - drivers/lsm303/test/**
   :source:
-    - lsm303/src/**
+    - drivers/lsm303/src/**
   :support:
-    - lsm303/test/support/**
+    - drivers/lsm303/test/support/**
 
 :defines:
   :common: &common_defines []
