@@ -21,159 +21,162 @@
 #ifndef LSM303_H
 #define LSM303_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
 #include <math.h>
+#include <stdint.h>
 
+/* SA0 pin connection status */
+#define SA0 1
 
-#define SA0 1                                                                   /* SA0 pin connection status */
+enum lsm303_acc_power_mode {
+  ACC_POWER_DOWN = 0x00,
+  ACC_LOW_POWER = 0x88,
+  ACC_NORMAL = 0x70
+};
 
-typedef enum {
-  LSM303_SUCCESS,
-  LSM303_FAILURE,
-  LSM303_INVALID_INPUT,
-} LSM303_STATUS;
+enum lsm303_acc_odr {
+  ACC_ODR_1HZ = 0x01,
+  ACC_ODR_10HZ = 0x02,
+  ACC_ODR_25HZ = 0x03,
+  ACC_ODR_50HZ = 0x04,
+  ACC_ODR_100HZ = 0x05,
+  ACC_ODR_200HZ = 0x06,
+  ACC_ODR_400HZ = 0x07,
+  ACC_ODR_1_620KHZ = 0x08,
+  ACC_ODR_1_344KHZ = 0x09,
+  ACC_ODR_5_376KHZ = 0x09
+};
 
-typedef enum {
-  ACC_RESOLUTION_10BIT,
-  ACC_RESOLUTION_12BIT,
-  ACC_RESOLUTION_14BIT,
-} ACC_RESOLUTION_CONFIG;
+enum lsm303_acc_axes_enable {
+  ACC_AXES_DISABLE_ALL = 0x00,
+  ACC_AXES_ENABLE_X = 0x01,
+  ACC_AXES_ENABLE_Y = 0x02,
+  ACC_AXES_ENABLE_Z = 0x04,
+  ACC_AXES_ENABLE_XY = 0x03,
+  ACC_AXES_ENABLE_XZ = 0x05,
+  ACC_AXES_ENABLE_YZ = 0x06,
+  ACC_AXES_ENABLE_XYZ = 0x07
+};
 
-typedef enum {
-  ACC_SCALE_2G,
-  ACC_SCALE_16G,
-  ACC_SCALE_4G,
-  ACC_SCALE_8G,
-} ACC_SCALE_CONFIG;
+enum lsm303_acc_full_scale {
+  ACC_SCALE_2G = 0x00,
+  ACC_SCALE_4G = 0x10,
+  ACC_SCALE_8G = 0x20,
+  ACC_SCALE_16G = 0x30
+};
 
-typedef enum {
-  ACC_ODR_1HZ,
-  ACC_ODR_12_5HZ,
-  ACC_ODR_25HZ,
-  ACC_ODR_50HZ,
-  ACC_ODR_100HZ,
-  ACC_ODR_200HZ,
-  ACC_ODR_400HZ,
-  ACC_ODR_800HZ,
-  ACC_ODR_1600HZ,
-  ACC_ODR_3200HZ,
-  ACC_ODR_6400HZ,
-} ACC_ODR_CONFIG;
+enum lsm303_mag_power_mode {
+  MAG_CONTINUOUS_CONVERSION = 0x00,
+  MAG_SINGLE_CONVERSION = 0x01,
+  MAG_SLEEP_MODE = 0x02
+};
 
-typedef enum {
-  MAG_ODR_10HZ,
-  MAG_ODR_20HZ,
-  MAG_ODR_50HZ,
-  MAG_ODR_100HZ,
-} MAG_ODR_CONFIG;
+enum lsm303_mag_full_scale {
+  MAG_SCALE_1_3G = 0x20,
+  MAG_SCALE_1_9G = 0x40,
+  MAG_SCALE_2_5G = 0x60,
+  MAG_SCALE_4_0G = 0x80,
+  MAG_SCALE_4_7G = 0xA0,
+  MAG_SCALE_5_6G = 0xC0,
+  MAG_SCALE_8_1G = 0xE0
+};
 
-typedef enum {
-  MAG_MODE_CONTINUOUS,
-  MAG_MODE_SINGLE,
-  MAG_MODE_IDLE,
-} MAG_MODE_CONFIG;
+enum lsm303_mag_odr {
+  MAG_ODR_0_75HZ = 0x00,
+  MAG_ODR_1_5HZ = 0x01,
+  MAG_ODR_3_0HZ = 0x02,
+  MAG_ODR_7_5HZ = 0x03,
+  MAG_ODR_15HZ = 0x04,
+  MAG_ODR_30HZ = 0x05,
+  MAG_ODR_75HZ = 0x06,
+  MAG_ODR_220HZ = 0x07
+};
+
+struct lsm303_dev {
+  enum lsm303_acc_power_mode acc_power_mode;
+  enum lsm303_mag_power_mode mag_power_mode;
+  enum lsm303_acc_odr acc_odr;
+  enum lsm303_mag_odr mag_odr;
+  enum lsm303_acc_axes_enable acc_axes;
+  enum lsm303_acc_full_scale acc_scale;
+  enum lsm303_mag_full_scale mag_scale;
+  bool temp_en;
+};
+
+struct lsm303_init_param {
+  enum lsm303_acc_power_mode acc_power_mode;
+  enum lsm303_mag_power_mode mag_power_mode;
+  enum lsm303_acc_odr acc_odr;
+  enum lsm303_mag_odr mag_odr;
+  enum lsm303_acc_axes_enable acc_axes;
+  enum lsm303_acc_full_scale acc_scale;
+  enum lsm303_mag_full_scale mag_scale;
+  bool temp_en;
+};
 
 /*****************************ID REGISTERS*************************************/
 #if SA0
-#define ACC_I2C_ADDRESS                     0x19
+#define ACC_I2C_ADDRESS 0x19
 #else
-#define ACC_I2C_ADDRESS                     0x18
+#define ACC_I2C_ADDRESS 0x18
 #endif
-#define MAG_I2C_ADDRESS                     0x1E
-
-#define WHO_AM_I_A_REG                      0x0F
-#define WHO_AM_I_A_REG_VAL                  0x43
-#define WHO_AM_I_M_REG                      0x4F
-#define WHO_AM_I_M_REG_VAL                  0x40
-
-/************************TEMPERATURE REGISTERS*********************************/
-#define OUT_T_A_REG                         0X26
+#define MAG_I2C_ADDRESS 0x1E
 
 /***********************ACCELEROMETER REGISTERS********************************/
-#define CTRL1_A_REG                         0x20  
-#define CTRL2_A_REG                         0x21  
-#define CTRL3_A_REG                         0x22  
-#define CTRL4_A_REG                         0x23 
-#define CTRL5_A_REG                         0x24
-#define FIFO_CTRL_A_REG                     0x25
-#define STATUS_A_REG                        0x27
 
-#define LSM303AGR_OUT_X_L_A                 0x28                                /* Output Register X acceleration */
-#define LSM303AGR_OUT_X_H_A                 0x29                                /* Output Register X acceleration */
-#define LSM303AGR_OUT_Y_L_A                 0x2A                                /* Output Register Y acceleration */
-#define LSM303AGR_OUT_Y_H_A                 0x2B                                /* Output Register Y acceleration */
-#define LSM303AGR_OUT_Z_L_A                 0x2C                                /* Output Register Z acceleration */
-#define LSM303AGR_OUT_Z_H_A                 0x2D                                /* Output Register Z acceleration */ 
-#define LSM303AGR_FIFO_CTRL_REG_A           0x2E                                /* Fifo control Register acceleration */
-#define LSM303AGR_FIFO_SRC_REG_A            0x2F                                /* Fifo src Register acceleration */
+typedef enum {
+  CTRL_REG1_A = 0x20,
+  CTRL_REG2_A = 0x21,
+  CTRL_REG3_A = 0x22,
+  CTRL_REG4_A = 0x23,
+  CTRL_REG5_A = 0x24,
+  CTRL_REG6_A = 0x25,
+  REFERENCE_A = 0x26,
+  STATUS_REG_A = 0x27,
+  OUT_X_L_A = 0x28,
+  OUT_X_H_A = 0x29,
+  OUT_Y_L_A = 0x2A,
+  OUT_Y_H_A = 0x2B,
+  OUT_Z_L_A = 0x2C,
+  OUT_Z_H_A = 0x2D,
+  FIFO_CTRL_REG_A = 0x2E,
+  FIFO_SRC_REG_A = 0x2F,
+  INT1_CFG_A = 0x30,
+  INT1_SRC_A = 0x31,
+  INT1_THS_A = 0x32,
+  INT1_DURATION_A = 0x33,
+  INT2_CFG_A = 0x34,
+  INT2_SRC_A = 0x35,
+  INT2_THS_A = 0x36,
+  INT2_DURATION_A = 0x37,
+  CLICK_CFG_A = 0x38,
+  CLICK_SRC_A = 0x39,
+  CLICK_THS_A = 0x3A,
+  TIME_LIMIT_A = 0x3B,
+  TIME_LATENCY_A = 0x3C,
+  TIME_WINDOW_A = 0x3D
+} LSM303DLHC_ACC_REG;
 
-#define LSM303AGR_INT1_CFG_A                0x30                                /* Interrupt 1 configuration Register acceleration */
-#define LSM303AGR_INT1_SOURCE_A             0x31                                /* Interrupt 1 source Register acceleration */
-#define LSM303AGR_INT1_THS_A                0x32                                /* Interrupt 1 Threshold register acceleration */
-#define LSM303AGR_INT1_DURATION_A           0x33                                /* Interrupt 1 DURATION register acceleration */
-
-#define LSM303AGR_INT2_CFG_A                0x34                                /* Interrupt 2 configuration Register acceleration */
-#define LSM303AGR_INT2_SOURCE_A             0x35                                /* Interrupt 2 source Register acceleration */
-#define LSM303AGR_INT2_THS_A                0x36                                /* Interrupt 2 Threshold register acceleration */
-#define LSM303AGR_INT2_DURATION_A           0x37                                /* Interrupt 2 DURATION register acceleration */
-
-#define LSM303AGR_CLICK_CFG_A               0x38                                /* Click configuration Register acceleration */
-#define LSM303AGR_CLICK_SOURCE_A            0x39                                /* Click 2 source Register acceleration */
-#define LSM303AGR_CLICK_THS_A               0x3A                                /* Click 2 Threshold register acceleration */
-
-#define LSM303AGR_TIME_LIMIT_A              0x3B                                /* Time Limit Register acceleration */
-#define LSM303AGR_TIME_LATENCY_A            0x3C                                /* Time Latency Register acceleration */
-#define LSM303AGR_TIME_WINDOW_A             0x3D                                /* Time window register acceleration */
-
-/* System Registers(New vs lsm303dlhc.h) */
-#define LSM303AGR_Act_THS_A                 0x3E                                /* return to sleep activation threshold register */
-#define LSM303AGR_Act_DUR_A                 0x3F                                /* return to sleep duration register */
-/* Magnetometer */
-#define LSM303AGR_X_REG_L_M                 0x45                                /* Hard-iron X magnetic field */
-#define LSM303AGR_X_REG_H_M                 0x46                                /* Hard-iron X magnetic field */
-#define LSM303AGR_Y_REG_L_M                 0x47                                /* Hard-iron Y magnetic field */
-#define LSM303AGR_Y_REG_H_M                 0x48                                /* Hard-iron Y magnetic field */
-#define LSM303AGR_Z_REG_L_M                 0x49                                /* Hard-iron Z magnetic field */
-#define LSM303AGR_Z_REH_H_M                 0x4A                                /* Hard-iron Z magnetic field */
-#define LSM303AGR_WHO_AM_I_M                0x4F                                /* Who am i register magnetic field (0x40) */
-#define LSM303AGR_CFG_REG_A_M               0x60                                /* Configuration register A magnetic field */
-#define LSM303AGR_CFG_REG_B_M               0x61                                /* Configuration register B magnetic field */
-#define LSM303AGR_CFG_REG_C_M               0x62                                /* Configuration register C magnetic field */
-#define LSM303AGR_INT_CTRL_REG_M            0x63                                /* interrupt control register magnetic field */
-#define LSM303AGR_INT_SOURCE_REG_M          0x64                                /* interrupt source register magnetic field */
-#define LSM303AGR_INT_THS_L_REG_M           0x65                                /* interrupt threshold register magnetic field */
-#define LSM303AGR_INT_THS_H_REG_M           0x66                                /* interrupt threshold register magnetic field*/
-#define LSM303AGR_STATUS_REG_M              0x67                                /* Status Register magnetic field */
-#define LSM303AGR_OUTX_L_REG_M              0x68                                /* Output Register X magnetic field */
-#define LSM303AGR_OUTX_H_REG_M              0x69                                /* Output Register X magnetic field */
-#define LSM303AGR_OUTY_L_REG_M              0x6A                                /* Output Register X magnetic field */
-#define LSM303AGR_OUTY_H_REG_M              0x6B                                /* Output Register X magnetic field */
-#define LSM303AGR_OUTZ_L_REG_M              0x6C                                /* Output Register X magnetic field */
-#define LSM303AGR_OUTZ_H_REG_M              0x6D                                /* Output Register X magnetic field */
-
-/*******************************REGISTERS**************************************/
+/***********************MAGNETOMETER REGISTERS*********************************/
+typedef enum {
+  CRA_REG_M = 0x00,
+  CRB_REG_M = 0x01,
+  MR_REG_M = 0x02,
+  OUT_X_H_M = 0x03,
+  OUT_X_L_M = 0x04,
+  OUT_Z_H_M = 0x05,
+  OUT_Z_L_M = 0x06,
+  OUT_Y_H_M = 0x07,
+  OUT_Y_L_M = 0x08,
+  SR_REG_M = 0x09,
+  IRA_REG_M = 0x0A,
+  IRB_REG_M = 0x0B,
+  IRC_REG_M = 0x0C,
+  TEMP_OUT_H_M = 0x31,
+  TEMP_OUT_L_M = 0x32
+} LSM303DLHC_MAG_REG;
 
 /*******************************PROTOTYPES*************************************/
-
-int init_acc_lsm303(ACC_SCALE_CONFIG scale, 
-                    ACC_RESOLUTION_CONFIG resolution, 
-                    ACC_ODR_CONFIG odr);
-
-int init_mag_lsm303(MAG_MODE_CONFIG mode, MAG_ODR_CONFIG odr);
-
-int is_acc_online (void);
-
-int is_mag_online (void);
-
-int get_lsm303_temperature(void);
-
-int lsm303_register_to_int(uint16_t num, int bits);
-
-void get_lsm303_accXYZ(float* pData, ACC_SCALE_CONFIG scale);
-
-/*******************************PROTOTYPES*************************************/
+uint8_t lsm303_setup(struct lsm303_dev **device,
+                     struct lsm303_init_param lsm303_params);
 
 #endif /* LSM303_H */

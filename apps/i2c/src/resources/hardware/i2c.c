@@ -17,51 +17,45 @@
  *
  ******************************************************************************
  */
-#include <stdio.h>
 #include <stdint.h>
-#include <zephyr/kernel.h>
+#include <stdio.h>
 #include <zephyr/device.h>
 #include <zephyr/devicetree.h>
 #include <zephyr/drivers/i2c.h>
-
+#include <zephyr/kernel.h>
 
 #include "i2c.h"
 
 #define i2c0_master DT_NODELABEL(i2c0)
 
 bool init_i2c0(struct device **bus) {
-    *bus = DEVICE_DT_GET(i2c0_master);
-    if (!device_is_ready(*bus)) {
-        printk("I2C bus is not ready!\n\r");
-        return false;
-    }
-    return true;
+  *bus = DEVICE_DT_GET(i2c0_master);
+  if (!device_is_ready(*bus)) {
+    printk("I2C bus is not ready!\n\r");
+    return false;
+  }
+  return true;
 }
 
-int i2c0_write_bytes(struct device **bus, uint8_t address, uint8_t *data_buffer)
-{
-    uint32_t bytecount = 2;
-    return i2c_write(*bus, data_buffer, bytecount, address);
+int i2c0_write_bytes(struct device **bus, uint8_t address,
+                     uint8_t *data_buffer) {
+  uint32_t bytecount = 2;
+  return i2c_write(*bus, data_buffer, bytecount, address);
 }
 
-int i2c0_read_byte(struct device **bus, uint8_t address, uint8_t data_read_virtual_address, uint8_t *read_data)
-{
-    int ret;
-    uint32_t bytecount = 1;
+int i2c0_read_byte(struct device **bus, uint8_t address,
+                   uint8_t data_read_virtual_address, uint8_t *read_data) {
+  int ret;
+  uint32_t bytecount = 1;
 
-    ret = i2c_write(*bus, 
-                    &data_read_virtual_address, 
-                    bytecount, 
-                    address);
-    if(ret != 0)
-    {
-        return ret;
-    }
+  ret = i2c_write(*bus, &data_read_virtual_address, bytecount, address);
+  if (ret != 0) {
+    return ret;
+  }
 
-    ret = i2c_read(*bus, read_data, sizeof(*read_data), address);
-    if(ret != 0)
-    {
-        return ret;
-    }
-    return 0;
+  ret = i2c_read(*bus, read_data, sizeof(*read_data), address);
+  if (ret != 0) {
+    return ret;
+  }
+  return 0;
 }

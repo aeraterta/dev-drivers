@@ -24,15 +24,9 @@
 	pinctrl-1 = <&i2c0_sleep>;
 	pinctrl-names = "default", "sleep";
 
-	i2c_acc: spi-i2c-a@19 {		
+	lsm303dlhc: spi-i2c-a@19 {		
 		compatible = "i2c-device";		
-		label = "device with id 0x19";	
+		label = "LSM303DLHC";	
 		reg = <0x19>;						
 	};
-
-	// i2c_mag: spi-i2c-a@1e {		
-	// 	compatible = "i2c-device";		
-	// 	label = "device with id 0x1E";	
-	// 	reg = <0x1E>;						
-	// };
 };
