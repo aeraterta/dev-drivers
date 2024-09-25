@@ -37,15 +37,15 @@ bool init_i2c0(struct device **bus) {
   return true;
 }
 
-int i2c0_write_bytes(struct device **bus, uint8_t address,
-                     uint8_t *data_buffer) {
+uint8_t i2c0_write_bytes(struct device **bus, uint8_t address,
+                         uint8_t *data_buffer) {
   uint32_t bytecount = 2;
   return i2c_write(*bus, data_buffer, bytecount, address);
 }
 
-int i2c0_read_byte(struct device **bus, uint8_t address,
-                   uint8_t data_read_virtual_address, uint8_t *read_data) {
-  int ret;
+uint8_t i2c0_read_byte(struct device **bus, uint8_t address,
+                       uint8_t data_read_virtual_address, uint8_t *read_data) {
+  uint8_t ret;
   uint32_t bytecount = 1;
 
   ret = i2c_write(*bus, &data_read_virtual_address, bytecount, address);

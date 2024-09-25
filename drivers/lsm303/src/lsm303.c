@@ -26,3 +26,12 @@ uint8_t lsm303_setup(struct lsm303_dev **device,
 
   return ret;
 }
+
+uint8_t lsm303_set_power_mode(struct lsm303_dev *device,
+                              enum lsm303_acc_power_mode mode) {
+  uint8_t val = 0x00;
+
+  val = val | mode << POWER_MODE_MASK;
+
+  return i2c0_write_bytes();
+}

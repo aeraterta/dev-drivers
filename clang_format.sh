@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Directories to process
-directories=("drivers" "zephyr" "apps")
+directories=("drivers" "zephyr")
 
 # Log file
 log_file="clang-format.log"

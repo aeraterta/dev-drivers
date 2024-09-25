@@ -24,8 +24,8 @@
 #include <zephyr/device.h>
 
 bool init_i2c0(struct device **bus);
-int i2c0_write_bytes(struct device **bus, uint8_t address,
-                     uint8_t *data_buffer);
-int i2c0_read_byte(struct device **bus, uint8_t address,
-                   uint8_t data_read_virtual_address, uint8_t *read_data);
+uint8_t i2c0_write_bytes(struct device **bus, uint8_t address,
+                         uint8_t *data_buffer);
+uint8_t i2c0_read_byte(struct device **bus, uint8_t address,
+                       uint8_t data_read_virtual_address, uint8_t *read_data);
 #endif

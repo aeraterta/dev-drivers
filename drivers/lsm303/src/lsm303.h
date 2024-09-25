@@ -21,6 +21,7 @@
 #ifndef LSM303_H
 #define LSM303_H
 
+#include "../../zephyr/drivers/i2c.h"
 #include <math.h>
 #include <stdint.h>
 
@@ -30,7 +31,7 @@
 enum lsm303_acc_power_mode {
   ACC_POWER_DOWN = 0x00,
   ACC_LOW_POWER = 0x88,
-  ACC_NORMAL = 0x70
+  ACC_NORMAL = 0x0E
 };
 
 enum lsm303_acc_odr {
@@ -175,8 +176,14 @@ typedef enum {
   TEMP_OUT_L_M = 0x32
 } LSM303DLHC_MAG_REG;
 
+/*********************************MASKS****************************************/
+
+#define POWER_MODE_MASK 0x03
+
 /*******************************PROTOTYPES*************************************/
 uint8_t lsm303_setup(struct lsm303_dev **device,
                      struct lsm303_init_param lsm303_params);
 
+uint8_t lsm303_set_power_mode(struct lsm303_dev *device,
+                              enum lsm303_acc_power_mode mode);
 #endif /* LSM303_H */
