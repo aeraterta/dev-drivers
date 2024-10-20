@@ -21,7 +21,7 @@
 #ifndef LSM303_H
 #define LSM303_H
 
-#include "../../zephyr/drivers/i2c.h"
+#include "../../zephyr/dev-utils/i2c.h"
 #include <math.h>
 #include <stdint.h>
 
