@@ -21,7 +21,6 @@
 #ifndef LSM303_H
 #define LSM303_H
 
-#include "../../zephyr/dev-utils/i2c.h"
 #include <math.h>
 #include <stdint.h>
 
@@ -178,7 +177,10 @@ typedef enum {
 
 /*********************************MASKS****************************************/
 
-#define POWER_MODE_MASK 0x03
+#define ACC_POWER_MODE_MASK 0x03
+#define ACC_AXES_MASK 0x00
+#define ACC_ODR_MASK 0x00
+#define ACC_SCALE_MASK 0x00
 
 /*******************************PROTOTYPES*************************************/
 uint8_t lsm303_setup(struct lsm303_dev **device,
@@ -186,4 +188,13 @@ uint8_t lsm303_setup(struct lsm303_dev **device,
 
 uint8_t lsm303_set_power_mode(struct lsm303_dev *device,
                               enum lsm303_acc_power_mode mode);
+
+uint8_t lsm303_acc_enable_axes(struct lsm303_dev *device,
+                               enum lsm303_acc_axes_enable axes);
+
+uint8_t lsm303_acc_set_odr(struct lsm303_dev *device, enum lsm303_acc_odr odr);
+
+uint8_t lsm303_acc_set_scale(struct lsm303_dev *device,
+                             enum lsm303_acc_full_scale scale);
+
 #endif /* LSM303_H */
